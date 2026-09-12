@@ -1,10 +1,15 @@
 import sqlite3
 import os
 
-DB_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(__file__)),
-    "data", "users.db"
-)
+# Sur Railway, le volume persistant est monté sur /data
+# En local (Windows), on utilise le dossier data/ du projet
+if os.path.exists("/data"):
+    DB_PATH = "/data/users.db"
+else:
+    DB_PATH = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)),
+        "data", "users.db"
+    )
 
 
 def init_db():
