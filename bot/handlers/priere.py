@@ -79,9 +79,17 @@ async def location_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     set_ville(user_id, ville["nom"], ville["lat"], ville["lon"])
+
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("📿 Voir les heures de prière", callback_data="action_priere")],
+        [InlineKeyboardButton("🧭 Direction de la Qibla", callback_data="action_qibla")],
+        [InlineKeyboardButton("📍 Changer de ville", callback_data="action_ville")],
+    ])
+
     await _reply(update,
         f"✅ Ville enregistrée : *{ville['nom']}* ({ville['pays']})\n\n"
-        f"Tape `/priere` ou `/qibla`.",
+        f"Que veux-tu faire maintenant ?",
+        reply_markup=keyboard,
         parse_mode="Markdown"
     )
 
