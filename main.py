@@ -22,6 +22,9 @@ from bot.handlers.dons import (
     don_command, don_callback, pre_checkout, successful_payment
 )
 from bot.handlers.langue import langue_command, langue_callback
+from bot.handlers.hijri import (
+    hijri_command, fetes_command, ramadan_command, hijri_callback
+)
 from bot.daily_job import send_daily_hadith
 
 
@@ -42,6 +45,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/ville - Choisir ta ville (boutons)\n"
         "/priere - Heures de prière\n"
         "/qibla - Direction de la Qibla\n"
+        "/hijri - Date Hijri du jour\n"
+        "/fetes - Prochaines fêtes islamiques\n"
+        "/ramadan - Compte à rebours Ramadan\n"
         "/langue - Changer la langue (boutons)\n"
         "/don - Soutenir le projet\n"
         "/help - Aide",
@@ -60,6 +66,9 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*/ville* → Choisir ta ville (boutons)\n"
         "*/priere* → Heures de prière\n"
         "*/qibla* → Direction de la Qibla\n"
+        "*/hijri* → Date Hijri du jour\n"
+        "*/fetes* → Prochaines fêtes islamiques\n"
+        "*/ramadan* → Compte à rebours Ramadan\n"
         "*/langue* → Changer la langue (boutons)\n"
         "*/don* → Soutenir le projet",
         parse_mode="Markdown"
@@ -84,6 +93,9 @@ def main():
     app.add_handler(CommandHandler("ville", ville_command))
     app.add_handler(CommandHandler("priere", priere_command))
     app.add_handler(CommandHandler("qibla", qibla_command))
+    app.add_handler(CommandHandler("hijri", hijri_command))
+    app.add_handler(CommandHandler("fetes", fetes_command))
+    app.add_handler(CommandHandler("ramadan", ramadan_command))
     app.add_handler(CommandHandler("langue", langue_command))
     app.add_handler(CommandHandler("don", don_command))
 
@@ -94,6 +106,7 @@ def main():
     app.add_handler(CallbackQueryHandler(ville_callback, pattern=r"^ville_"))
     app.add_handler(CallbackQueryHandler(action_callback, pattern=r"^action_"))
     app.add_handler(CallbackQueryHandler(sourate_callback, pattern=r"^sur_"))
+    app.add_handler(CallbackQueryHandler(hijri_callback, pattern=r"^hijri_"))
 
     # Paiement
     app.add_handler(PreCheckoutQueryHandler(pre_checkout))
@@ -108,7 +121,7 @@ def main():
         )
         print("⏰ Rappel quotidien programmé à 8h00.")
 
-    print("✅ TakwaBot v1.0 — toutes fonctionnalités actives.")
+    print("✅ TakwaBot v1.1 — Hijri + Fêtes + Ramadan actifs.")
     app.run_polling()
 
 
