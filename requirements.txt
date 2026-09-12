@@ -1,5 +1,5 @@
 python-telegram-bot[job-queue]>=21.0
 python-dotenv>=1.0.0
 requests>=2.31.0
-prayer-times-calculator>=1.0.0
+prayer-times-calculator>=0.0.12
 hijri-converter>=2.3.0
