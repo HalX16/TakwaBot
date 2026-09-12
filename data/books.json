@@ -1,0 +1,90 @@
+[
+  {
+    "id": "coran_fr",
+    "titre": "Le Saint Coran (traduction française)",
+    "auteur": "Traduction Muhammad Hamidullah",
+    "langue": "fr",
+    "categorie": "Coran",
+    "description": "Traduction française du Coran par Muhammad Hamidullah.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/download/le-noble-coran-et-la-traduction-en-francais-pdf/",
+    "disponible": false
+  },
+  {
+    "id": "riyad_salihin_fr",
+    "titre": "Riyad as-Salihin (Les Jardins des Vertueux)",
+    "auteur": "Imam an-Nawawi",
+    "langue": "fr",
+    "categorie": "Hadiths",
+    "description": "Recueil de hadiths authentiques classés par thèmes.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/",
+    "disponible": false
+  },
+  {
+    "id": "bukhari_fr",
+    "titre": "Sahih al-Bukhari (traduction française)",
+    "auteur": "Imam al-Bukhari",
+    "langue": "fr",
+    "categorie": "Hadiths",
+    "description": "Le recueil de hadiths le plus authentique après le Coran.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/",
+    "disponible": false
+  },
+  {
+    "id": "muslim_fr",
+    "titre": "Sahih Muslim (traduction française)",
+    "auteur": "Imam Muslim",
+    "langue": "fr",
+    "categorie": "Hadiths",
+    "description": "Deuxième recueil de hadiths authentiques.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/",
+    "disponible": false
+  },
+  {
+    "id": "coran_ar",
+    "titre": "القرآن الكريم",
+    "auteur": "Texte original",
+    "langue": "ar",
+    "categorie": "Coran",
+    "description": "Le Coran en texte arabe authentique.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/",
+    "disponible": false
+  },
+  {
+    "id": "fortress_muslim",
+    "titre": "La Citadelle du Musulman (Hisn al-Muslim)",
+    "auteur": "Sa'id ibn Ali ibn Wahf al-Qahtani",
+    "langue": "fr",
+    "categorie": "Invocations",
+    "description": "Recueil d'invocations du Coran et de la Sunna.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/",
+    "disponible": false
+  },
+  {
+    "id": "tawhid_fr",
+    "titre": "Le Livre du Tawhid",
+    "auteur": "Muhammad ibn Abd al-Wahhab",
+    "langue": "fr",
+    "categorie": "Croyance",
+    "description": "Traité fondamental sur l'unicité d'Allah.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/",
+    "disponible": false
+  },
+  {
+    "id": "prophetes_fr",
+    "titre": "Les Histoires des Prophètes",
+    "auteur": "Ibn Kathir",
+    "langue": "fr",
+    "categorie": "Histoire",
+    "description": "Récits des prophètes de Adam à Muhammad ﷺ.",
+    "fichier": null,
+    "url_externe": "https://www.islamhouse.com/",
+    "disponible": false
+  }
+]
