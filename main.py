@@ -31,6 +31,26 @@ from bot.handlers.bibliotheque import (
 )
 from bot.daily_job import send_daily_hadith
 
+import os
+import shutil
+
+
+def ensure_data_files():
+    """Copie les fichiers de données dans le volume s'ils n'y sont pas."""
+    data_dir = "/app/data"
+    source_dir = os.path.join(os.path.dirname(__file__), "data")
+    files_to_copy = [
+        "quran.json", "quran_en.json", "hadiths.json",
+        "villes.json", "books.json"
+    ]
+    os.makedirs(data_dir, exist_ok=True)
+    for filename in files_to_copy:
+        dest_path = os.path.join(data_dir, filename)
+        src_path = os.path.join(source_dir, filename)
+        if not os.path.exists(dest_path) and os.path.exists(src_path):
+            print(f"📋 Copie de {filename} vers le volume...")
+            shutil.copy2(src_path, dest_path)
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -92,6 +112,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
+    ensure_data_files()
     init_db()
 
     app = Application.builder().token(BOT_TOKEN).build()
