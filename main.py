@@ -1,4 +1,4 @@
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler,
     PreCheckoutQueryHandler, MessageHandler, filters, ContextTypes
@@ -19,7 +19,8 @@ from bot.handlers.priere import (
 )
 from bot.handlers.qibla import qibla_command
 from bot.handlers.dons import (
-    don_command, don_callback, pre_checkout, successful_payment
+    don_command, don_callback, pre_checkout, successful_payment,
+    don_menu_callback
 )
 from bot.handlers.langue import langue_command, langue_callback
 from bot.handlers.hijri import (
@@ -34,6 +35,10 @@ from bot.daily_job import send_daily_hadith
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
     register_user(user.id, user.username)
+
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu")]
+    ])
 
     await update.message.reply_text(
         "🕌 Assalamou alaykoum !\n\n"
@@ -55,11 +60,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/langue - Changer la langue (boutons)\n"
         "/don - Soutenir le projet\n"
         "/help - Aide",
+        reply_markup=keyboard,
         parse_mode="Markdown"
     )
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = InlineKeyboardMarkup([
+        [InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu")]
+    ])
+
     await update.message.reply_text(
         "📖 *Aide TakwaBot*\n\n"
         "*/sourate 1* → Al-Fatiha (avec boutons ⬅️ ➡️)\n"
@@ -76,6 +86,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*/bibliotheque* → Livres islamiques\n"
         "*/langue* → Changer la langue (boutons)\n"
         "*/don* → Soutenir le projet",
+        reply_markup=keyboard,
         parse_mode="Markdown"
     )
 
@@ -106,7 +117,8 @@ def main():
     app.add_handler(CommandHandler("don", don_command))
 
     # Callbacks (boutons)
-    app.add_handler(CallbackQueryHandler(don_callback, pattern=r"^don_"))
+    app.add_handler(CallbackQueryHandler(don_callback, pattern=r"^don_\d+$"))
+    app.add_handler(CallbackQueryHandler(don_menu_callback, pattern=r"^don_menu$"))
     app.add_handler(CallbackQueryHandler(langue_callback, pattern=r"^lang_"))
     app.add_handler(CallbackQueryHandler(hadith_callback, pattern=r"^hadith_"))
     app.add_handler(CallbackQueryHandler(ville_callback, pattern=r"^ville_"))

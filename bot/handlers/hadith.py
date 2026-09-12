@@ -113,7 +113,10 @@ def get_hadith(langue: str):
 
 def _keyboard():
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("🔄 Autre hadith", callback_data="hadith_next")]
+        [
+            InlineKeyboardButton("🔄 Autre hadith", callback_data="hadith_next"),
+            InlineKeyboardButton("💝 Soutenir", callback_data="don_menu"),
+        ]
     ])
 
 

@@ -72,7 +72,7 @@ def build_sourate_message(sourate: dict):
 
 
 def keyboard_sourate(sid: int):
-    """Boutons Précédente / Menu / Suivante."""
+    """Boutons Précédente / Menu / Suivante + Soutenir."""
     prev_id = 114 if sid == 1 else sid - 1
     next_id = 1 if sid == 114 else sid + 1
     return InlineKeyboardMarkup([
@@ -80,6 +80,9 @@ def keyboard_sourate(sid: int):
             InlineKeyboardButton(f"⬅️ {prev_id}", callback_data=f"sur_{prev_id}"),
             InlineKeyboardButton("📚 Menu", callback_data="sur_menu"),
             InlineKeyboardButton(f"{next_id} ➡️", callback_data=f"sur_{next_id}"),
+        ],
+        [
+            InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu"),
         ]
     ])
 
