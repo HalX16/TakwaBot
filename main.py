@@ -29,15 +29,16 @@ from bot.handlers.hijri import (
 from bot.handlers.bibliotheque import (
     bibliotheque_command, bibliotheque_callback
 )
+from bot.handlers.notifications import (
+    notifications_command, notifications_callback
+)
 from bot.handlers.menu import menu_command, menu_callback
-from bot.daily_job import send_daily_hadith
+from bot.daily_job import send_matin, send_midi, send_soir, send_nuit
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Affiche le menu principal."""
     user = update.effective_user
     register_user(user.id, user.username)
-
     await menu_command(update, context)
 
 
@@ -57,7 +58,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*/liste* → Les 114 sourates\n\n"
         "*🕋 Hadith*\n"
         "*/hadith* → Hadith aléatoire\n"
-        "*/rappel on|off* → Rappel quotidien\n\n"
+        "*/rappel on|off* → Rappel quotidien\n"
+        "*/notifications* → 4 rappels par jour\n\n"
         "*📿 Prière & Qibla*\n"
         "*/ville* → Choisir ta ville (boutons)\n"
         "*/location <ville>* → Saisie libre\n"
@@ -83,18 +85,17 @@ def main():
 
     app = Application.builder().token(BOT_TOKEN).build()
 
-    # Commandes principales
+    # Commandes
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("menu", menu_command))
     app.add_handler(CommandHandler("help", help_command))
-
-    # Commandes existantes (toujours fonctionnelles)
     app.add_handler(CommandHandler("sourate", sourate_command))
     app.add_handler(CommandHandler("verset", verset_command))
     app.add_handler(CommandHandler("recherche", recherche_command))
     app.add_handler(CommandHandler("liste", liste_command))
     app.add_handler(CommandHandler("hadith", hadith_command))
     app.add_handler(CommandHandler("rappel", rappel_command))
+    app.add_handler(CommandHandler("notifications", notifications_command))
     app.add_handler(CommandHandler("location", location_command))
     app.add_handler(CommandHandler("ville", ville_command))
     app.add_handler(CommandHandler("priere", priere_command))
@@ -106,8 +107,9 @@ def main():
     app.add_handler(CommandHandler("langue", langue_command))
     app.add_handler(CommandHandler("don", don_command))
 
-    # Callbacks (boutons)
+    # Callbacks
     app.add_handler(CallbackQueryHandler(menu_callback, pattern=r"^menu_"))
+    app.add_handler(CallbackQueryHandler(notifications_callback, pattern=r"^notif_"))
     app.add_handler(CallbackQueryHandler(don_callback, pattern=r"^don_\d+$"))
     app.add_handler(CallbackQueryHandler(don_menu_callback, pattern=r"^don_menu$"))
     app.add_handler(CallbackQueryHandler(langue_callback, pattern=r"^lang_"))
@@ -122,16 +124,15 @@ def main():
     app.add_handler(PreCheckoutQueryHandler(pre_checkout))
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment))
 
-    # Job quotidien
+    # Jobs quotidiens (4 créneaux)
     if app.job_queue:
-        app.job_queue.run_daily(
-            send_daily_hadith,
-            time=time(hour=8, minute=0),
-            name="daily_hadith"
-        )
-        print("⏰ Rappel quotidien programmé à 8h00.")
+        app.job_queue.run_daily(send_matin, time=time(hour=8,  minute=0), name="pub_matin")
+        app.job_queue.run_daily(send_midi,  time=time(hour=13, minute=0), name="pub_midi")
+        app.job_queue.run_daily(send_soir,  time=time(hour=18, minute=0), name="pub_soir")
+        app.job_queue.run_daily(send_nuit,  time=time(hour=21, minute=0), name="pub_nuit")
+        print("⏰ 4 rappels quotidiens programmés (8h, 13h, 18h, 21h).")
 
-    print("✅ TakwaBot v1.3 — Menu ergonomique actif.")
+    print("✅ TakwaBot v1.4 — Notifications multiples actives.")
     app.run_polling()
 
 

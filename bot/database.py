@@ -23,14 +23,23 @@ def init_db():
             ville TEXT,
             latitude REAL,
             longitude REAL,
-            langue TEXT DEFAULT 'fr'
+            langue TEXT DEFAULT 'fr',
+            pub_matin INTEGER DEFAULT 1,
+            pub_midi INTEGER DEFAULT 1,
+            pub_soir INTEGER DEFAULT 1,
+            pub_nuit INTEGER DEFAULT 1
         )
     """)
+    # Migration : ajoute les colonnes si elles n'existent pas
     for col, typ, default in [
         ("ville", "TEXT", None),
         ("latitude", "REAL", None),
         ("longitude", "REAL", None),
         ("langue", "TEXT", "'fr'"),
+        ("pub_matin", "INTEGER", "1"),
+        ("pub_midi", "INTEGER", "1"),
+        ("pub_soir", "INTEGER", "1"),
+        ("pub_nuit", "INTEGER", "1"),
     ]:
         try:
             if default:
@@ -118,3 +127,43 @@ def get_langue(user_id: int) -> str:
     row = c.fetchone()
     conn.close()
     return row[0] if row and row[0] else "fr"
+
+
+# ============================================================
+#   Notifications multiples
+# ============================================================
+
+def set_pub(user_id: int, creneau: str, actif: int):
+    """creneau : 'matin', 'midi', 'soir', 'nuit'"""
+    if creneau not in ("matin", "midi", "soir", "nuit"):
+        return
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute(f"UPDATE users SET pub_{creneau} = ? WHERE user_id = ?", (actif, user_id))
+    conn.commit()
+    conn.close()
+
+
+def get_pub(user_id: int):
+    """Retourne (matin, midi, soir, nuit) → tuple de 4 entiers (0 ou 1)."""
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute(
+        "SELECT pub_matin, pub_midi, pub_soir, pub_nuit FROM users WHERE user_id = ?",
+        (user_id,)
+    )
+    row = c.fetchone()
+    conn.close()
+    return row if row else (1, 1, 1, 1)
+
+
+def get_users_with_pub(creneau: str):
+    """Retourne la liste des user_id ayant ce créneau activé."""
+    if creneau not in ("matin", "midi", "soir", "nuit"):
+        return []
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute(f"SELECT user_id FROM users WHERE pub_{creneau} = 1")
+    rows = c.fetchall()
+    conn.close()
+    return [r[0] for r in rows]

@@ -26,7 +26,7 @@ def _menu_principal():
             InlineKeyboardButton("🌍 Langue", callback_data="menu_langue"),
         ],
         [
-            InlineKeyboardButton("🔔 Rappel", callback_data="menu_rappel"),
+            InlineKeyboardButton("🔔 Notifications", callback_data="menu_notif"),
             InlineKeyboardButton("💝 Soutenir", callback_data="don_menu"),
         ],
         [
@@ -174,11 +174,12 @@ async def menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # Menu Rappel
-    if data == "menu_rappel":
+    # Notifications
+    if data == "menu_notif":
+        from bot.handlers.notifications import _keyboard, _texte
         await query.edit_message_text(
-            _menu_rappel_texte(),
-            reply_markup=_menu_rappel(),
+            _texte(),
+            reply_markup=_keyboard(query.from_user.id),
             parse_mode="Markdown"
         )
         return
