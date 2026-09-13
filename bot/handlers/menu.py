@@ -30,6 +30,9 @@ def _menu_principal():
             InlineKeyboardButton("💝 Soutenir", callback_data="don_menu"),
         ],
         [
+            InlineKeyboardButton("📤 Partager TakwaBot", callback_data="menu_partage"),
+        ],
+        [
             InlineKeyboardButton("📋 Toutes les commandes", callback_data="menu_help"),
         ],
     ])
@@ -180,6 +183,20 @@ async def menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await query.edit_message_text(
             _texte(),
             reply_markup=_keyboard(query.from_user.id),
+            parse_mode="Markdown"
+        )
+        return
+    # Partage
+    if data == "menu_partage":
+        from bot.handlers.partage import keyboard_partage
+        await query.edit_message_text(
+            "📤 *Partage TakwaBot*\n"
+            "━━━━━━━━━━━━━━━━━━━━\n\n"
+            "Tu aimes TakwaBot ? Partage-le autour de toi !\n\n"
+            "Chaque personne qui rejoint la communauté nous aide "
+            "à améliorer le bot in shaa Allah.\n\n"
+            "🤲 JazakAllah khair pour ton soutien !",
+            reply_markup=keyboard_partage(),
             parse_mode="Markdown"
         )
         return

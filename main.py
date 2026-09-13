@@ -1,4 +1,5 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from bot.handlers.partage import partager_command
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler,
     PreCheckoutQueryHandler, MessageHandler, filters, ContextTypes
@@ -43,9 +44,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from bot.handlers.partage import bouton_partage
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
-        [InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu")],
+        [
+            InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu"),
+            bouton_partage(),
+        ],
     ])
 
     await update.message.reply_text(
@@ -73,6 +78,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "*/bibliotheque* → Livres islamiques\n"
         "*/langue* → FR / EN / AR\n"
         "*/don* → Soutenir le projet\n"
+        "*/partager* → Partager le bot\n"
         "*/menu* → Menu principal\n\n"
         "💡 _Astuce : utilise le menu pour cliquer directement !_",
         reply_markup=keyboard,
@@ -89,6 +95,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("menu", menu_command))
     app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("partager", partager_command))
     app.add_handler(CommandHandler("sourate", sourate_command))
     app.add_handler(CommandHandler("verset", verset_command))
     app.add_handler(CommandHandler("recherche", recherche_command))

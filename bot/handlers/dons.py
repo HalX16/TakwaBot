@@ -77,10 +77,14 @@ async def successful_payment(update: Update, context: ContextTypes.DEFAULT_TYPE)
     montant = payment.total_amount
     user = update.effective_user
 
+    from bot.handlers.partage import keyboard_partage
+
     await update.message.reply_text(
         f"✅ *Don reçu !*\n\n"
         f"Merci {user.first_name} pour ton soutien de *{montant} Stars* ! 🎉\n\n"
-        f"🤲 Qu'Allah te récompense pour ta générosité.",
+        f"🤲 Qu'Allah te récompense pour ta générosité.\n\n"
+        f"💡 Tu peux aussi nous aider en partageant TakwaBot 👇",
+        reply_markup=keyboard_partage(),
         parse_mode="Markdown"
     )
 
