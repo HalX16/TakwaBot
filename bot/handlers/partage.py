@@ -7,7 +7,7 @@ from telegram.ext import ContextTypes
 # ============================================================
 
 # ⚠️ Remplace ce username par le vrai username de ton bot (sans @)
-BOT_USERNAME = "TakwaBot"
+BOT_USERNAME = "TakwaHBot"
 
 # Texte qui accompagne le lien
 SHARE_TEXT = "🕌 Découvre TakwaBot, ton compagnon spirituel sur Telegram : Coran, hadiths, horaires de prière, Qibla et plus encore !"
@@ -23,7 +23,7 @@ def share_url():
 
 def bouton_partage():
     """Retourne un bouton inline 'Partager'."""
-    return InlineKeyboardButton("📤 Partager TakwaBot", url=share_url())
+    return InlineKeyboardButton("📤 Partager TakwaHBot", url=share_url())
 
 
 def keyboard_partage():

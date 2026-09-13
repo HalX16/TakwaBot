@@ -106,6 +106,77 @@ VILLES_POPULAIRES = [
     "Dakar", "Abidjan",
 ]
 
+# ============================================================
+#   Villes par région
+# ============================================================
+
+VILLES_PAR_REGION = {
+    "france": [
+        "Paris", "Marseille", "Lyon", "Toulouse", "Lille", "Bordeaux",
+        "Nice", "Strasbourg", "Nantes", "Montpellier", "Rennes", "Reims",
+        "Saint-Étienne", "Toulon", "Grenoble", "Dijon", "Angers", "Nîmes",
+        "Villeurbanne", "Clermont-Ferrand", "Le Mans", "Aix-en-Provence",
+        "Brest", "Tours", "Amiens", "Limoges", "Annecy", "Perpignan",
+        "Besançon", "Metz", "Orléans", "Rouen", "Mulhouse", "Caen",
+        "Nancy", "Argenteuil", "Montreuil", "Avignon", "Poitiers",
+        "Dunkerque", "Versailles", "Colombes", "Asnières-sur-Seine",
+        "Créteil", "Aubervilliers", "Aulnay-sous-Bois", "Saint-Denis",
+    ],
+    "europe": [
+        "Bruxelles", "Anvers", "Liège", "Gand", "Charleroi",
+        "Genève", "Zurich", "Lausanne", "Berne", "Bâle",
+        "Londres", "Manchester", "Birmingham", "Glasgow", "Édimbourg", "Liverpool",
+        "Madrid", "Barcelone", "Valence", "Séville", "Málaga",
+        "Rome", "Milan", "Naples", "Turin",
+        "Berlin", "Munich", "Francfort", "Hambourg", "Cologne",
+        "Amsterdam", "Rotterdam", "La Haye",
+        "Lisbonne", "Porto", "Vienne", "Stockholm", "Oslo",
+        "Copenhague", "Helsinki", "Dublin",
+    ],
+    "maghreb": [
+        "Casablanca", "Rabat", "Marrakech", "Fès", "Tanger",
+        "Agadir", "Meknès", "Oujda", "Kénitra",
+        "Alger", "Oran", "Constantine", "Annaba", "Sétif",
+        "Tunis", "Sfax", "Sousse", "Kairouan",
+        "Tripoli", "Nouakchott",
+    ],
+    "moyen_orient": [
+        "Istanbul", "Ankara", "Izmir",
+        "La Mecque", "Médine", "Riyad", "Djeddah",
+        "Dubaï", "Abu Dhabi", "Doha", "Koweït", "Manama", "Mascate",
+        "Le Caire", "Alexandrie",
+        "Amman", "Beyrouth", "Damas", "Bagdad",
+        "Jérusalem", "Gaza", "Téhéran",
+    ],
+    "afrique": [
+        "Dakar", "Touba", "Bamako", "Abidjan", "Conakry",
+        "Ouagadougou", "Niamey", "Cotonou", "Lomé",
+        "Yaoundé", "Douala", "Libreville", "Kinshasa", "Brazzaville",
+        "Khartoum", "Mogadiscio", "Djibouti",
+    ],
+    "ameriques": [
+        "Montréal", "Toronto", "Ottawa", "Vancouver", "Québec",
+        "New York", "Los Angeles", "Chicago", "Houston", "Miami",
+        "Détroit", "Washington", "Boston",
+        "Mexico", "São Paulo", "Buenos Aires",
+    ],
+    "asie": [
+        "Pékin", "Shanghai", "Tokyo", "Séoul", "Jakarta",
+        "Kuala Lumpur", "Singapour", "Karachi", "Lahore", "Islamabad",
+        "Delhi", "Mumbai", "Dacca", "Kaboul",
+    ],
+}
+
+REGIONS_LABELS = {
+    "france": "🇫🇷 France",
+    "europe": "🇪🇺 Europe",
+    "maghreb": "🇲🇦 Maghreb",
+    "moyen_orient": "🕌 Moyen-Orient",
+    "afrique": "🌍 Afrique",
+    "ameriques": "🌎 Amériques",
+    "asie": "🌏 Asie",
+}
+
 
 def _keyboard_villes():
     buttons = []
@@ -118,6 +189,46 @@ def _keyboard_villes():
             row = []
     if row:
         buttons.append(row)
+    # Bouton "Plus de villes"
+    buttons.append([
+        InlineKeyboardButton("🌍 Plus de villes", callback_data="ville_more")
+    ])
+    return InlineKeyboardMarkup(buttons)
+
+
+def _keyboard_regions():
+    """Clavier des régions."""
+    buttons = []
+    row = []
+    for key, label in REGIONS_LABELS.items():
+        row.append(InlineKeyboardButton(label, callback_data=f"region_{key}"))
+        if len(row) == 2:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
+    buttons.append([
+        InlineKeyboardButton("⬅️ Retour", callback_data="ville_back")
+    ])
+    return InlineKeyboardMarkup(buttons)
+
+
+def _keyboard_villes_region(region_key: str):
+    """Clavier des villes d'une région."""
+    villes = VILLES_PAR_REGION.get(region_key, [])
+    buttons = []
+    row = []
+    for label in villes:
+        cb = "ville_" + label.lower().replace(" ", "_").replace("'", "")
+        row.append(InlineKeyboardButton(label, callback_data=cb))
+        if len(row) == 2:
+            buttons.append(row)
+            row = []
+    if row:
+        buttons.append(row)
+    buttons.append([
+        InlineKeyboardButton("⬅️ Régions", callback_data="ville_more")
+    ])
     return InlineKeyboardMarkup(buttons)
 
 
@@ -129,7 +240,10 @@ async def ville_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await _reply(update,
         f"📍 *Choisis ta ville*\n\n"
         f"Ville actuelle : {actuelle}\n\n"
-        f"👇 Clique sur une ville.",
+        f"👇 Clique sur une ville ci-dessous.\n\n"
+        f"💡 *Ta ville n'est pas dans la liste ?*\n"
+        f"Tape simplement : `/location NomDeTaVille`\n"
+        f"Exemple : `/location Strasbourg`",
         reply_markup=_keyboard_villes(),
         parse_mode="Markdown"
     )
@@ -139,27 +253,79 @@ async def ville_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    key = query.data.split("_", 1)[1].replace("_", " ")
-    ville = find_ville(key)
-    if not ville:
-        await query.edit_message_text("❌ Ville introuvable.")
+    data = query.data
+
+    # Bouton "Plus de villes" → affiche les régions
+    if data == "ville_more":
+        await query.edit_message_text(
+            "🌍 *Plus de villes*\n"
+            "━━━━━━━━━━━━━━━━━━━━\n\n"
+            "Choisis une région :\n\n"
+            "💡 *Ta ville n'est pas dans la liste ?*\n"
+            "Tape directement `/location NomDeTaVille`",
+            reply_markup=_keyboard_regions(),
+            parse_mode="Markdown"
+        )
         return
 
-    user_id = query.from_user.id
-    set_ville(user_id, ville["nom"], ville["lat"], ville["lon"])
+    # Bouton "Retour" depuis les régions → retour aux villes populaires
+    if data == "ville_back":
+        user_id = query.from_user.id
+        row = get_ville(user_id)
+        actuelle = f"*{row[0]}*" if row and row[0] else "_aucune_"
 
-    keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("📿 Voir les heures de prière", callback_data="action_priere")],
-        [InlineKeyboardButton("🧭 Direction de la Qibla", callback_data="action_qibla")],
-        [InlineKeyboardButton("📍 Changer de ville", callback_data="action_ville")],
-    ])
+        await query.edit_message_text(
+            f"📍 *Choisis ta ville*\n\n"
+            f"Ville actuelle : {actuelle}\n\n"
+            f"👇 Clique sur une ville ci-dessous.\n\n"
+            f"💡 *Ta ville n'est pas dans la liste ?*\n"
+            f"Tape : `/location NomDeTaVille`",
+            reply_markup=_keyboard_villes(),
+            parse_mode="Markdown"
+        )
+        return
 
-    await query.edit_message_text(
-        f"✅ Ville enregistrée : *{ville['nom']}* ({ville['pays']})\n\n"
-        f"Que veux-tu faire maintenant ?",
-        reply_markup=keyboard,
-        parse_mode="Markdown"
-    )
+    # Bouton "Région" → affiche les villes de la région
+    if data.startswith("region_"):
+        region_key = data.replace("region_", "")
+        if region_key not in VILLES_PAR_REGION:
+            await query.answer("❌ Région inconnue", show_alert=True)
+            return
+
+        label = REGIONS_LABELS.get(region_key, region_key)
+        await query.edit_message_text(
+            f"{label}\n"
+            f"━━━━━━━━━━━━━━━━━━━━\n\n"
+            f"Choisis ta ville :",
+            reply_markup=_keyboard_villes_region(region_key),
+            parse_mode="Markdown"
+        )
+        return
+
+    # Bouton "Ville" → enregistre la ville
+    if data.startswith("ville_"):
+        key = data.replace("ville_", "").replace("_", " ").replace("'", "")
+        ville = find_ville(key)
+        if not ville:
+            await query.answer("❌ Ville introuvable", show_alert=True)
+            return
+
+        user_id = query.from_user.id
+        set_ville(user_id, ville["nom"], ville["lat"], ville["lon"])
+
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("📿 Voir les heures de prière", callback_data="action_priere")],
+            [InlineKeyboardButton("🧭 Direction de la Qibla", callback_data="action_qibla")],
+            [InlineKeyboardButton("📍 Changer de ville", callback_data="action_ville")],
+        ])
+
+        await query.edit_message_text(
+            f"✅ Ville enregistrée : *{ville['nom']}* ({ville['pays']})\n\n"
+            f"Que veux-tu faire maintenant ?",
+            reply_markup=keyboard,
+            parse_mode="Markdown"
+        )
+        return
 
 
 # ============================================================
