@@ -122,6 +122,8 @@ def main():
     app.add_handler(CallbackQueryHandler(langue_callback, pattern=r"^lang_"))
     app.add_handler(CallbackQueryHandler(hadith_callback, pattern=r"^hadith_"))
     app.add_handler(CallbackQueryHandler(ville_callback, pattern=r"^ville_"))
+    app.add_handler(CallbackQueryHandler(ville_callback, pattern=r"^region_"))
+    app.add_handler(CallbackQueryHandler(ville_callback, pattern=r"^vilreg_"))
     app.add_handler(CallbackQueryHandler(action_callback, pattern=r"^action_"))
     app.add_handler(CallbackQueryHandler(sourate_callback, pattern=r"^sur_"))
     app.add_handler(CallbackQueryHandler(hijri_callback, pattern=r"^hijri_"))
