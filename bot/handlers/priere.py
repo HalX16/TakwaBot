@@ -214,18 +214,29 @@ def _keyboard_regions():
 
 
 def _keyboard_villes_region(region_key: str):
-    """Clavier des villes d'une région."""
-    villes = VILLES_PAR_REGION.get(region_key, [])
+    """Clavier des villes d'une région (avec vrais noms de villes)."""
+    villes_noms = VILLES_PAR_REGION.get(region_key, [])
     buttons = []
     row = []
-    for label in villes:
-        cb = "ville_" + label.lower().replace(" ", "_").replace("'", "")
-        row.append(InlineKeyboardButton(label, callback_data=cb))
+
+    for nom_voulu in villes_noms:
+        # On retrouve la vraie ville dans VILLES (accents, casse, etc.)
+        ville = find_ville(nom_voulu)
+        if not ville:
+            continue  # ville absente → on saute
+
+        # On utilise l'index réel pour un callback_data fiable
+        nom_brut = ville["nom"]  # ex: "Strasbourg"
+        cb = "vilreg_" + nom_brut.lower().replace(" ", "_").replace("'", "").replace("-", "_")
+        row.append(InlineKeyboardButton(nom_brut, callback_data=cb))
+
         if len(row) == 2:
             buttons.append(row)
             row = []
+
     if row:
         buttons.append(row)
+
     buttons.append([
         InlineKeyboardButton("⬅️ Régions", callback_data="ville_more")
     ])
@@ -302,9 +313,34 @@ async def ville_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-    # Bouton "Ville" → enregistre la ville
-    if data.startswith("ville_"):
+    # Bouton "Ville" (menu populaire) → enregistre la ville
+    if data.startswith("ville_") and not data.startswith("ville_more") and not data.startswith("ville_back"):
         key = data.replace("ville_", "").replace("_", " ").replace("'", "")
+        ville = find_ville(key)
+        if not ville:
+            await query.answer("❌ Ville introuvable", show_alert=True)
+            return
+
+        user_id = query.from_user.id
+        set_ville(user_id, ville["nom"], ville["lat"], ville["lon"])
+
+        keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton("📿 Voir les heures de prière", callback_data="action_priere")],
+            [InlineKeyboardButton("🧭 Direction de la Qibla", callback_data="action_qibla")],
+            [InlineKeyboardButton("📍 Changer de ville", callback_data="action_ville")],
+        ])
+
+        await query.edit_message_text(
+            f"✅ Ville enregistrée : *{ville['nom']}* ({ville['pays']})\n\n"
+            f"Que veux-tu faire maintenant ?",
+            reply_markup=keyboard,
+            parse_mode="Markdown"
+        )
+        return
+
+    # Bouton ville depuis une région (vilreg_) → enregistre la ville
+    if data.startswith("vilreg_"):
+        key = data.replace("vilreg_", "").replace("_", " ").replace("'", "")
         ville = find_ville(key)
         if not ville:
             await query.answer("❌ Ville introuvable", show_alert=True)
