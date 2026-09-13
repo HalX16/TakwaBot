@@ -156,7 +156,16 @@ async def menu_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 parse_mode="Markdown"
             )
         except Exception:
-            pass
+            # Si edit échoue → supprime et renvoie
+            try:
+                await query.message.delete()
+            except Exception:
+                pass
+            await query.message.chat.send_message(
+                _menu_texte(),
+                reply_markup=_menu_principal(),
+                parse_mode="Markdown"
+            )
         return
 
     # Menu Coran
