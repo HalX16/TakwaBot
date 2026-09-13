@@ -29,68 +29,50 @@ from bot.handlers.hijri import (
 from bot.handlers.bibliotheque import (
     bibliotheque_command, bibliotheque_callback
 )
+from bot.handlers.menu import menu_command, menu_callback
 from bot.daily_job import send_daily_hadith
-
-import os
-import shutil
-
-
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Affiche le menu principal."""
     user = update.effective_user
     register_user(user.id, user.username)
 
-    keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu")]
-    ])
-
-    await update.message.reply_text(
-        "🕌 Assalamou alaykoum !\n\n"
-        "Bienvenue sur *TakwaBot*, ton compagnon spirituel.\n\n"
-        "📖 *Commandes disponibles :*\n"
-        "/sourate <n°|nom> - Lire une sourate\n"
-        "/verset X:Y - Lire un verset précis\n"
-        "/recherche <mot> - Chercher dans le Coran\n"
-        "/liste - Voir les 114 sourates\n"
-        "/hadith - Un hadith du jour\n"
-        "/rappel on|off - Activer/désactiver le rappel\n"
-        "/ville - Choisir ta ville (boutons)\n"
-        "/priere - Heures de prière\n"
-        "/qibla - Direction de la Qibla\n"
-        "/hijri - Date Hijri du jour\n"
-        "/fetes - Prochaines fêtes islamiques\n"
-        "/ramadan - Compte à rebours Ramadan\n"
-        "/bibliotheque - Livres islamiques\n"
-        "/langue - Changer la langue (boutons)\n"
-        "/don - Soutenir le projet\n"
-        "/help - Aide",
-        reply_markup=keyboard,
-        parse_mode="Markdown"
-    )
+    await menu_command(update, context)
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = InlineKeyboardMarkup([
-        [InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu")]
+        [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
+        [InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu")],
     ])
 
     await update.message.reply_text(
-        "📖 *Aide TakwaBot*\n\n"
-        "*/sourate 1* → Al-Fatiha (avec boutons ⬅️ ➡️)\n"
-        "*/verset 2:255* → Aya al-Kursi\n"
-        "*/recherche patience* → Versets sur la patience\n"
-        "*/hadith* → Hadith aléatoire (bouton 🔄)\n"
-        "*/rappel on|off* → Rappel quotidien\n"
+        "📖 *Toutes les commandes TakwaBot*\n"
+        "━━━━━━━━━━━━━━━━━━━━\n\n"
+        "*📖 Coran*\n"
+        "*/sourate <n°|nom>* → Lire une sourate\n"
+        "*/verset X:Y* → Verset précis (ex: 2:255)\n"
+        "*/recherche <mot>* → Chercher dans le Coran\n"
+        "*/liste* → Les 114 sourates\n\n"
+        "*🕋 Hadith*\n"
+        "*/hadith* → Hadith aléatoire\n"
+        "*/rappel on|off* → Rappel quotidien\n\n"
+        "*📿 Prière & Qibla*\n"
         "*/ville* → Choisir ta ville (boutons)\n"
+        "*/location <ville>* → Saisie libre\n"
         "*/priere* → Heures de prière\n"
-        "*/qibla* → Direction de la Qibla\n"
+        "*/qibla* → Direction de la Qibla\n\n"
+        "*🌙 Calendrier*\n"
         "*/hijri* → Date Hijri du jour\n"
-        "*/fetes* → Prochaines fêtes islamiques\n"
-        "*/ramadan* → Compte à rebours Ramadan\n"
+        "*/fetes* → Prochaines fêtes\n"
+        "*/ramadan* → Compte à rebours\n\n"
+        "*📚 Autres*\n"
         "*/bibliotheque* → Livres islamiques\n"
-        "*/langue* → Changer la langue (boutons)\n"
-        "*/don* → Soutenir le projet",
+        "*/langue* → FR / EN / AR\n"
+        "*/don* → Soutenir le projet\n"
+        "*/menu* → Menu principal\n\n"
+        "💡 _Astuce : utilise le menu pour cliquer directement !_",
         reply_markup=keyboard,
         parse_mode="Markdown"
     )
@@ -101,9 +83,12 @@ def main():
 
     app = Application.builder().token(BOT_TOKEN).build()
 
-    # Commandes
+    # Commandes principales
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("menu", menu_command))
     app.add_handler(CommandHandler("help", help_command))
+
+    # Commandes existantes (toujours fonctionnelles)
     app.add_handler(CommandHandler("sourate", sourate_command))
     app.add_handler(CommandHandler("verset", verset_command))
     app.add_handler(CommandHandler("recherche", recherche_command))
@@ -122,6 +107,7 @@ def main():
     app.add_handler(CommandHandler("don", don_command))
 
     # Callbacks (boutons)
+    app.add_handler(CallbackQueryHandler(menu_callback, pattern=r"^menu_"))
     app.add_handler(CallbackQueryHandler(don_callback, pattern=r"^don_\d+$"))
     app.add_handler(CallbackQueryHandler(don_menu_callback, pattern=r"^don_menu$"))
     app.add_handler(CallbackQueryHandler(langue_callback, pattern=r"^lang_"))
@@ -145,7 +131,7 @@ def main():
         )
         print("⏰ Rappel quotidien programmé à 8h00.")
 
-    print("✅ TakwaBot v1.2 — Bibliothèque ajoutée.")
+    print("✅ TakwaBot v1.3 — Menu ergonomique actif.")
     app.run_polling()
 
 
