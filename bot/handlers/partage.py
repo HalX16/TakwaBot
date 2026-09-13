@@ -7,7 +7,7 @@ from telegram.ext import ContextTypes
 # ============================================================
 
 # ⚠️ Remplace ce username par le vrai username de ton bot (sans @)
-BOT_USERNAME = "TakwaHBot"
+BOT_USERNAME = "TkwaHBot"
 
 # Texte qui accompagne le lien
 SHARE_TEXT = "🕌 Découvre TakwaBot, ton compagnon spirituel sur Telegram : Coran, hadiths, horaires de prière, Qibla et plus encore !"

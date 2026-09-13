@@ -40,8 +40,8 @@ def _keyboard_categories():
     if row:
         buttons.append(row)
     buttons.append([InlineKeyboardButton("📚 Tous les livres", callback_data="book_cat_ALL")])
+    buttons.append([InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")])
     return InlineKeyboardMarkup(buttons)
-
 
 def _keyboard_books(categorie: str):
     """Affiche les livres d'une catégorie."""
@@ -63,7 +63,8 @@ def _keyboard_books(categorie: str):
 
 def _keyboard_book_detail(book_id: str):
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("⬅️ Retour", callback_data="book_back")]
+        [InlineKeyboardButton("⬅️ Retour", callback_data="book_back")],
+        [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")]
     ])
 
 

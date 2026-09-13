@@ -445,6 +445,7 @@ async def priere_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("🔄 Actualiser", callback_data="action_priere")],
         [InlineKeyboardButton("🧭 Qibla", callback_data="action_qibla")],
         [InlineKeyboardButton("📍 Changer de ville", callback_data="action_ville")],
+        [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
     ])
 
     await _reply(update, msg, reply_markup=keyboard, parse_mode="Markdown")

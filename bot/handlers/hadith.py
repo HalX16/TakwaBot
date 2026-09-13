@@ -116,6 +116,9 @@ def _keyboard():
         [
             InlineKeyboardButton("🔄 Autre hadith", callback_data="hadith_next"),
             InlineKeyboardButton("💝 Soutenir", callback_data="don_menu"),
+        ],
+        [
+            InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back"),
         ]
     ])
 
@@ -124,12 +127,20 @@ def _keyboard():
 #   /hadith
 # ============================================================
 
+async def _reply(update: Update, text: str, **kwargs):
+    """Répond soit à un message, soit à un callback."""
+    if update.callback_query:
+        await update.callback_query.message.reply_text(text, **kwargs)
+    else:
+        await update.message.reply_text(text, **kwargs)
+
+
 async def hadith_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     langue = get_langue(user_id)
 
     h = get_hadith(langue)
-    await update.message.reply_text(
+    await _reply(update,
         format_hadith(h),
         reply_markup=_keyboard(),
         parse_mode="Markdown"

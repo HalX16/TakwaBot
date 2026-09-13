@@ -105,6 +105,7 @@ async def hijri_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     kb = InlineKeyboardMarkup([
         [InlineKeyboardButton("📅 Fêtes à venir", callback_data="hijri_fetes")],
         [InlineKeyboardButton("🌙 Ramadan", callback_data="hijri_ramadan")],
+        [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
     ])
 
     await _reply(update, msg, reply_markup=kb, parse_mode="Markdown")
@@ -156,6 +157,7 @@ async def fetes_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     kb = InlineKeyboardMarkup([
         [InlineKeyboardButton("🌙 Date Hijri du jour", callback_data="hijri_today")],
         [InlineKeyboardButton("🌙 Ramadan", callback_data="hijri_ramadan")],
+        [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
     ])
 
     await _reply(update, msg, reply_markup=kb, parse_mode="Markdown")
@@ -209,6 +211,7 @@ async def ramadan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     kb = InlineKeyboardMarkup([
         [InlineKeyboardButton("📅 Fêtes à venir", callback_data="hijri_fetes")],
         [InlineKeyboardButton("🌙 Date Hijri du jour", callback_data="hijri_today")],
+        [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
     ])
 
     await _reply(update, msg, reply_markup=kb, parse_mode="Markdown")

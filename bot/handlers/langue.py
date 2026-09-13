@@ -20,6 +20,14 @@ def _keyboard_langues():
     return InlineKeyboardMarkup(buttons)
 
 
+async def _reply(update: Update, text: str, **kwargs):
+    """Répond soit à un message, soit à un callback."""
+    if update.callback_query:
+        await update.callback_query.message.reply_text(text, **kwargs)
+    else:
+        await update.message.reply_text(text, **kwargs)
+
+
 async def langue_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """/langue → affiche les boutons. /langue fr|en|ar → change directement."""
     user_id = update.effective_user.id
@@ -28,13 +36,13 @@ async def langue_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.args:
         code = context.args[0].lower()
         if code not in LANGUES:
-            await update.message.reply_text(
+            await _reply(update,
                 "⚠️ Langue invalide. Choisis : `fr`, `en` ou `ar`.",
                 parse_mode="Markdown"
             )
             return
         set_langue(user_id, code)
-        await update.message.reply_text(
+        await _reply(update,
             f"✅ Langue changée : *{LANGUES[code]}*\n\n"
             f"Tape `/sourate 1` pour tester.",
             parse_mode="Markdown"
@@ -43,7 +51,7 @@ async def langue_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # Sinon : affiche les boutons
     actuelle = get_langue(user_id)
-    await update.message.reply_text(
+    await _reply(update,
         f"🌍 *Choisis ta langue*\n\n"
         f"Langue actuelle : *{LANGUES.get(actuelle, actuelle)}*\n\n"
         f"ℹ️ La langue change la traduction du Coran. "

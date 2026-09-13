@@ -86,6 +86,7 @@ async def qibla_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("🔄 Recalculer", callback_data="action_qibla")],
         [InlineKeyboardButton("📿 Heures de prière", callback_data="action_priere")],
         [InlineKeyboardButton("📍 Changer de ville", callback_data="action_ville")],
+        [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
     ])
 
     await _reply(update, msg, reply_markup=keyboard, parse_mode="Markdown")
