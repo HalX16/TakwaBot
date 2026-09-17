@@ -1,10 +1,11 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from bot.handlers.partage import partager_command
 from telegram.ext import (
     Application, CommandHandler, CallbackQueryHandler,
     PreCheckoutQueryHandler, MessageHandler, filters, ContextTypes
 )
 from datetime import time
+import sqlite3
+import os
 
 from config import BOT_TOKEN
 from bot.database import init_db, register_user
@@ -33,8 +34,13 @@ from bot.handlers.bibliotheque import (
 from bot.handlers.notifications import (
     notifications_command, notifications_callback
 )
+from bot.handlers.partage import partager_command
 from bot.handlers.menu import menu_command, menu_callback
 from bot.daily_job import send_matin, send_midi, send_soir, send_nuit
+
+
+# ⚠️ REMPLACE CE NUMÉRO PAR TON VRAI ID TELEGRAM
+ADMIN_ID = 1160844543
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -44,13 +50,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    from bot.handlers.partage import bouton_partage
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("🏠 Menu principal", callback_data="menu_back")],
-        [
-            InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu"),
-            bouton_partage(),
-        ],
+        [InlineKeyboardButton("💝 Soutenir TakwaBot", callback_data="don_menu")],
     ])
 
     await update.message.reply_text(
@@ -86,6 +88,32 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Commande admin : affiche le nombre d'utilisateurs."""
+    if update.effective_user.id != ADMIN_ID:
+        await update.message.reply_text("⛔ Commande réservée à l'administrateur.")
+        return
+
+    if os.path.exists("/data"):
+        db_path = "/data/users.db"
+    else:
+        db_path = os.path.join(os.path.dirname(__file__), "data", "users.db")
+
+    conn = sqlite3.connect(db_path)
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM users")
+    total = c.fetchone()[0]
+    conn.close()
+
+    await update.message.reply_text(
+        f"📊 *Statistiques TakwaBot*\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"👥 Utilisateurs enregistrés : *{total}*\n\n"
+        f"_Ce nombre correspond aux personnes ayant utilisé /start._",
+        parse_mode="Markdown"
+    )
+
+
 def main():
     init_db()
 
@@ -95,7 +123,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("menu", menu_command))
     app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("partager", partager_command))
+    app.add_handler(CommandHandler("stats", stats_command))
     app.add_handler(CommandHandler("sourate", sourate_command))
     app.add_handler(CommandHandler("verset", verset_command))
     app.add_handler(CommandHandler("recherche", recherche_command))
@@ -113,6 +141,7 @@ def main():
     app.add_handler(CommandHandler("bibliotheque", bibliotheque_command))
     app.add_handler(CommandHandler("langue", langue_command))
     app.add_handler(CommandHandler("don", don_command))
+    app.add_handler(CommandHandler("partager", partager_command))
 
     # Callbacks
     app.add_handler(CallbackQueryHandler(menu_callback, pattern=r"^menu_"))
@@ -141,7 +170,7 @@ def main():
         app.job_queue.run_daily(send_nuit,  time=time(hour=21, minute=0), name="pub_nuit")
         print("⏰ 4 rappels quotidiens programmés (8h, 13h, 18h, 21h).")
 
-    print("✅ TakwaBot v1.4 — Notifications multiples actives.")
+    print("✅ TakwaBot v1.5 — Stats admin actives.")
     app.run_polling()
 
 
